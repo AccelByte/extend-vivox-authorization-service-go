@@ -1,56 +1,18 @@
-# extend-service-extension-go
+# extend-rtu-vivox-authorization-service-go
 
-```mermaid
-flowchart LR
-   CL[Game Client]
-   subgraph "Extend Service Ext. App"
-   GW["gRPC Gateway"]
-   SV["gRPC Server"]
-   end
-   CL --- GW
-   GW --- SV
-```
-
-`AccelByte Gaming Services` (AGS) capabilities can be enhanced using 
-`Extend Service Extension` apps. An `Extend Service Extension` app is a RESTful 
-web service created using a stack that includes a `gRPC Server` and the 
-[gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway?tab=readme-ov-file#about).
+A Vivox authentication service is essential for integrating AccelByte Gaming Services (AGS), Vivox, and game clients. It generates the signed Vivox token that game clients need to interact with Vivox. This token is valid for 90 seconds, so game clients must regularly call the service to obtain a new token.
 
 ## Overview
 
-This repository provides a project template for an `Extend Service Extension` 
-app written in `Go`. It includes an example of a custom vivox auth service which has
-one endpoint to get vivox auth token. Additionally, it comes
-with built-in instrumentation for observability, ensuring that metrics, traces,
-and logs are available upon deployment.
+This repository provides a project template for an `Vivox Authorization Service` Extend Service Extension app written in `Go`. It includes a ready to use service to generate Vivox access token. This web service created using a stack that includes a `gRPC Server` and the [gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway?tab=readme-ov-file#about). Additionally, it comes with built-in instrumentation for observability, ensuring that metrics, traces, and logs are available upon deployment.
 
-You can clone this repository to begin developing your own 
-`Extend Service Extension` app. Simply modify this project by defining your 
-endpoints in `service.proto` file and implementing the handlers for those 
+You can clone this repository to modify and develope your own
+`Vivox Authorization Service` Extend app. Simply modify this project by defining your
+endpoints in `service.proto` file and implementing the handlers for those
 endpoints.
 
-## Project Structure
+Please refer to [Extend Service Extension](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/) documentation on how to customize Extend Service Extension app.
 
-Customizing your Extend Service Extension app involves modifying the `service.proto` and `myService.go` files. The app initializes key components, such as the gRPC server, in `main.go`. When a request is made to the RESTful endpoint, the gRPC gateway handles it and forwards it to the corresponding gRPC method. Before `myService.go` executes any custom logic based on the request, the `authServerInterceptor.go` first verifies that the request has the necessary access token and authorization. No other files need to be modified unless you require further customization.
-
-```shell
-.
-├── main.go   # App starts here
-├── pkg
-│   ├── common
-│   │   ├── authServerInterceptor.go    # gRPC server interceptor for access token authentication and authorization
-│   │   ├── ...
-│   ├── pb    # gRPC stubs generated from gRPC server protobuf
-│   │   └── ...
-│   ├── proto
-│   │   ├── service.proto     # gRPC server protobuf with additional options for exposing as RESTful web service
-│   │   └── ...
-│   ├── service
-│   │   ├── myService.go      # gRPC server implementation containing the custom logic
-│   │   └── ...
-│   └── ...
-└── ...
-```
 
 ## Prerequisites
 
@@ -58,67 +20,67 @@ Customizing your Extend Service Extension app involves modifying the `service.pr
 
    a. Bash
 
-      - On Windows WSL2 or Linux Ubuntu:
+   - On Windows WSL2 or Linux Ubuntu:
 
-         ```
-         bash --version
+      ```
+      bash --version
 
-         GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)
-         ...
-         ```
+      GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)
+      ...
+      ```
 
-      - On macOS:
+   - On macOS:
 
-         ```
-         bash --version
+      ```
+      bash --version
 
-         GNU bash, version 3.2.57(1)-release (arm64-apple-darwin23)
-         ...
-         ```
+      GNU bash, version 3.2.57(1)-release (arm64-apple-darwin23)
+      ...
+      ```
 
    b. Make
 
-      - On Windows WSL2 or Linux Ubuntu:
+   - On Windows WSL2 or Linux Ubuntu:
 
-         To install from the Ubuntu repository, run `sudo apt update && sudo apt install make`.
+     To install from the Ubuntu repository, run `sudo apt update && sudo apt install make`.
 
-         ```
-         make --version
+      ```
+      make --version
 
-         GNU Make 4.3
-         ...
-         ```
+      GNU Make 4.3
+      ...
+      ```
 
-      - On macOS:
+   - On macOS:
 
-         ```
-         make --version
+      ```
+      make --version
 
-         GNU Make 3.81
-         ...
-         ```
+      GNU Make 3.81
+      ...
+      ```
 
    c. Docker (Docker Desktop 4.30+/Docker Engine v23.0+)
-   
-      - On Linux Ubuntu:
 
-         1. To install from the Ubuntu repository, run `sudo apt update && sudo apt install docker.io docker-buildx docker-compose-v2`.
-         2. Add your user to the `docker` group: `sudo usermod -aG docker $USER`.
-         3. Log out and log back in to allow the changes to take effect.
+   - On Linux Ubuntu:
 
-      - On Windows or macOS:
+      1. To install from the Ubuntu repository, run `sudo apt update && sudo apt install docker.io docker-buildx docker-compose-v2`.
+      2. Add your user to the `docker` group: `sudo usermod -aG docker $USER`.
+      3. Log out and log back in to allow the changes to take effect.
 
-         Follow Docker's documentation on installing the Docker Desktop on [Windows](https://docs.docker.com/desktop/install/windows-install/) or [macOS](https://docs.docker.com/desktop/install/mac-install/).
+   - On Windows or macOS:
 
-         ```
-         docker version
+     Follow Docker's documentation on installing the Docker Desktop on [Windows](https://docs.docker.com/desktop/install/windows-install/) or [macOS](https://docs.docker.com/desktop/install/mac-install/).
 
-         ...
-         Server: Docker Desktop
-            Engine:
-            Version:          24.0.5
-         ...
-         ```
+      ```
+      docker version
+
+      ...
+      Server: Docker Desktop
+         Engine:
+         Version:          24.0.5
+      ...
+      ```
 
    d. Go v1.20
 
@@ -132,7 +94,7 @@ Customizing your Extend Service Extension app involves modifying the `service.pr
 
    e. [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli)
 
-      - Use the available binary from [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli/releases).
+   - Use the available binary from [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli/releases).
 
    > :exclamation: In macOS, you may use [Homebrew](https://brew.sh/) to easily install some of the tools above.
 
@@ -140,43 +102,79 @@ Customizing your Extend Service Extension app involves modifying the `service.pr
 
    a. Base URL:
 
-      - Sample URL for AGS Shared Cloud customers: `https://spaceshooter.prod.gamingservices.accelbyte.io`
-      - Sample URL for AGS Private Cloud customers:  `https://dev.accelbyte.io`
+   - Sample URL for AGS Shared Cloud customers: `https://spaceshooter.prod.gamingservices.accelbyte.io`
+   - Sample URL for AGS Private Cloud customers:  `https://dev.accelbyte.io`
 
    b. [Create a Game Namespace](https://docs.accelbyte.io/gaming-services/tutorials/how-to/namespaces/create-a-game-namespace/) if you don't have one yet. Keep the `Namespace ID`. Make sure this namespace is in active status.
 
-   c. [Create an OAuth Client](https://docs.accelbyte.io/gaming-services/services/access/authorization/manage-access-control-for-applications/#create-an-iam-client) with confidential client type with the following permissions. Keep the `Client ID` and `Client Secret`.
+   c. [Create an OAuth Client](https://docs.accelbyte.io/gaming-services/services/access/authorization/manage-access-control-for-applications/#create-an-iam-client)
+   with confidential client type with the following permissions. Keep the
+   `Client ID` and `Client Secret`.
 
-      - For AGS Private Cloud customers:
-         - `ADMIN:ROLE [READ]` to validate access token and permissions
-         - `ADMIN:NAMESPACE:{namespace}:NAMESPACE [READ]` to validate access namespace
-         - `ADMIN:NAMESPACE:{namespace}:CLOUDSAVE:RECORD [CREATE,READ,UPDATE,DELETE]` to create, read, update, and delete cloudsave records
-      - For AGS Shared Cloud customers:
-         - IAM -> Roles (Read)
-         - Basic -> Namespace (Read)
-         - Cloud Save -> Game Records (Create, Read, Update, Delete)
+   - For AGS Private Cloud customers:
+      - `ADMIN:ROLE [READ]` to validate access token and permissions
+      - `ADMIN:NAMESPACE:{namespace}:NAMESPACE [READ]` to validate access namespace
+   - For AGS Shared Cloud customers:
+      - IAM -> Roles (Read)
+      - Basic -> Namespace (Read)
+
 ## Setup
 
 To be able to run this app, you will need to follow these setup steps.
 
-1. Create a docker compose `.env` file by copying the content of [.env.template](.env.template) file.
+1. Create a docker compose `.env` file by copying the content of
+   [.env.template](.env.template) file.
 
-   > :warning: **The host OS environment variables have higher precedence compared to `.env` file variables**:
-   > If the variables in `.env` file do not seem to take effect properly, check if there are host OS environment variables with the same name. 
-   > See documentation about [docker compose environment variables precedence](https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/) for more details.
+   > :warning: **The host OS environment variables have higher precedence
+   compared to `.env` file variables**: If the variables in `.env` file do not
+   seem to take effect properly, check if there are host OS environment
+   variables with the same name. See documentation about
+   [docker compose environment variables precedence](https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/)
+   for more details.
 
 2. Fill in the required environment variables in `.env` file as shown below.
 
    ```
-   AB_BASE_URL='http://test.accelbyte.io'    # Your environment's domain Base URL
-   AB_CLIENT_ID='xxxxxxxxxx'                 # Client ID from the Prerequisites section
-   AB_CLIENT_SECRET='xxxxxxxxxx'             # Client Secret from the Prerequisites section
-   AB_NAMESPACE='xxxxxxxxxx'                 # Namespace ID from the Prerequisites section
-   PLUGIN_GRPC_SERVER_AUTH_ENABLED=true      # Enable or disable access token and permission validation
-   BASE_PATH='/vivoxauth'                    # The base path used for the app
+   AB_BASE_URL='http://test.accelbyte.io'       # Your environment's domain Base URL
+   AB_CLIENT_ID='xxxxxxxxxx'                    # Client ID from the Prerequisites section
+   AB_CLIENT_SECRET='xxxxxxxxxx'                # Client Secret from the Prerequisites section
+   AB_NAMESPACE='xxxxxxxxxx'                    # Namespace ID from the Prerequisites section
+   PLUGIN_GRPC_SERVER_AUTH_ENABLED=true         # Enable or disable access token and permission validation
+   BASE_PATH='/vivoxauth'                       # The base path used for the app
+   VIVOX_ISSUER='xxxx'                          # Replace with your Vivox application-specific issuer name
+   VIVOX_DOMAIN='tla.vivox.com'                 # Replace with Vivox domain default to `tla.vivox.com`
+   VIVOX_SIGNING_KEY='xxxxxxx'                  # Replace with your Vivox signing key
    ```
 
    > :exclamation: **In this app, PLUGIN_GRPC_SERVER_AUTH_ENABLED is `true` by default**: If it is set to `false`, the endpoint `permission.action` and `permission.resource`  validation will be disabled and the endpoint can be accessed without a valid access token. This option is provided for development purpose only.
+
+   For more options, create
+   `src/AccelByte.Extend.Vivox.Authentication.Server/appsettings.Development.json`
+   and fill in the required configuration.
+
+   ```json
+   {
+      "EnableAuthorization": true,                    // Enable or disable access token and permission check (env var: PLUGIN_GRPC_SERVER_AUTH_ENABLED)
+      "RevocationListRefreshPeriod": 60,
+      "AccelByte": {
+        "BaseUrl": "http://test.accelbyte.io",       // Your environment's domain Base URL (env var: AB_BASE_URL)
+        "ClientId": "xxxxxxxxxx",                    // Client ID (env var: AB_CLIENT_ID)    
+        "ClientSecret": "xxxxxxxxxx",                // Client Secret (env var: AB_CLIENT_SECRET)
+        "AppName": "EXTENDSERVICEEXTENSIONSERVICE",
+        "TraceIdVersion": "1",
+        "Namespace": "xxxxxxxxxx",                   // Namespace ID (env var: AB_NAMESPACE)
+        "EnableTraceId": true,
+        "EnableUserAgentInfo": true,
+        "ResourceName": "EXTENDSERVICEEXTENSIONSERVICE"
+      },
+      "Vivox": {
+        "Issuer": "xxxx",                           // Vivox issuer (env var: VIVOX_ISSUER)
+        "Domain": "tla.vivox.com",                  // Vivox domain (env var: VIVOX_DOMAIN)
+        "SigningKey": "xxxxxxx"                     // Vivox signing key (env var: VIVOX_SIGNING_KEY)
+      }
+   }
+   ```
+   > :warning: **Environment variable values will override related configuration values in this file**.
 
 ## Building
 
@@ -185,6 +183,8 @@ To build this app, use the following command.
 ```shell
 make build
 ```
+
+The build output will be available in `.output` directory.
 
 ## Running
 
@@ -196,6 +196,15 @@ docker compose up --build
 
 ## Testing
 
+### Unit Test
+
+The unit test for the example included in this project is available in `src/AccelByte.Extend.Vivox.Authentication.Tests`.
+Run this command to execute unit test.
+
+```shell
+make test
+```
+
 ### Test in Local Development Environment
 
 This app can be tested locally through the Swagger UI.
@@ -206,8 +215,8 @@ This app can be tested locally through the Swagger UI.
    docker compose up --build
    ```
 
-2. If **PLUGIN_GRPC_SERVER_AUTH_ENABLED** is `true`: Get access token to 
-   be able to access the REST API service. You can generate the user access 
+2. If **PLUGIN_GRPC_SERVER_AUTH_ENABLED** is `true`: Get access token to
+   be able to access the REST API service. You can generate the user access
    token using [getusertoken.sh](getusertoken.sh) shell script. To run it, you
    will need to set the following environment variables.
 
@@ -217,7 +226,7 @@ This app can be tested locally through the Swagger UI.
    export AB_CLIENT_SECRET='xxxxxxxxxx'             # Client Secret from the Prerequisites section
    ```
 
-   Then use the following command to run the script to get the user access 
+   Then use the following command to run the script to get the user access
    token.
 
    ```shell
@@ -225,15 +234,15 @@ This app can be tested locally through the Swagger UI.
    bash getusertoken.sh <username> <password>
    ```
 
-   > :info: Make sure the user has a role which contains this permission: 
-   `ADMIN:NAMESPACE:{namespace}:CLOUDSAVE:RECORD [CREATE,READ,UPDATE,DELETE]`.
+   > :info: Make sure the user has a role which contains this permission:
+   `ADMIN:NAMESPACE:{namespace}:VIVOX:TOKEN [READ]`.
 
-3. The REST API service can then be tested by opening Swagger UI at 
-   `http://localhost:8000/vivoxauth/apidocs/`. Use this to create an API request 
+3. The REST API service can then be tested by opening Swagger UI at
+   `http://localhost:8000/vivoxauth/apidocs/`. Use this to create an API request
    to try the endpoints.
-   
-   > :info: Depending on the envar you set for `BASE_PATH`, the service will 
-   have different service URL. This how it's the formatted 
+
+   > :info: Depending on the envar you set for `BASE_PATH`, the service will
+   have different service URL. This how it's the formatted
    `http://localhost:8000/<base_path>`
 
    ![swagger-interface](./docs/images/swagger-interface.png)
@@ -242,13 +251,13 @@ This app can be tested locally through the Swagger UI.
 
    ![swagger-interface](./docs/images/swagger-authorize.png)
 
-   Popup will show, input "Bearer <user's access token>" in `Value` field for 
+   Popup will show, input "Bearer <user's access token>" in `Value` field for
    `Bearer (apiKey)`. Then click "Authorize" to save the user's access token.
 
 ### Test Observability
 
 To be able to see the how the observability works in this template project in
-local development environment, there are few things that need be setup before 
+local development environment, there are few things that need be setup before
 performing test.
 
 1. Uncomment loki logging driver in [docker-compose.yaml](docker-compose.yaml)
@@ -264,13 +273,13 @@ performing test.
    ```
 
    > :warning: **Make sure to install docker loki plugin beforehand**: Otherwise,
-   this app will not be able to run. This is required so that container 
-   logs can flow to the `loki` service within `grpc-plugin-dependencies` stack. 
-   Use this command to install docker loki plugin: 
+   this app will not be able to run. This is required so that container
+   logs can flow to the `loki` service within `grpc-plugin-dependencies` stack.
+   Use this command to install docker loki plugin:
    `docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`.
 
-2. Clone and run [grpc-plugin-dependencies](https://github.com/AccelByte/grpc-plugin-dependencies) stack alongside this app. After this, Grafana 
-will be accessible at http://localhost:3000.
+2. Clone and run [grpc-plugin-dependencies](https://github.com/AccelByte/grpc-plugin-dependencies) stack alongside this app. After this, Grafana
+   will be accessible at http://localhost:3000.
 
    ```
    git clone https://github.com/AccelByte/grpc-plugin-dependencies.git
@@ -278,7 +287,8 @@ will be accessible at http://localhost:3000.
    docker compose up
    ```
 
-   > :exclamation: More information about [grpc-plugin-dependencies](https://github.com/AccelByte/grpc-plugin-dependencies) is available [here](https://github.com/AccelByte/grpc-plugin-dependencies/blob/main/README.md).
+   > :exclamation: More information about [grpc-plugin-dependencies](https://github.com/AccelByte/grpc-plugin-dependencies)
+   is available [here](https://github.com/AccelByte/grpc-plugin-dependencies/blob/main/README.md).
 
 3. Perform testing. For example, by following [Test in Local Development Environment](#test-in-local-development-environment).
 
@@ -286,7 +296,7 @@ will be accessible at http://localhost:3000.
 
 To deploy this app to AGS, follow the steps below.
 
-1. [Create a new Extend Service Extension App on Admin Portal](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/getting-started-service-extension/#register-and-integrate-custom-service-to-extend-service-extension). 
+1. [Create a new Extend Service Extension App on Admin Portal](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/getting-started-service-extension/#register-and-integrate-custom-service-to-extend-service-extension).
    Keep the `Repository URI`.
 
 2. Download and setup [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli/) 
@@ -322,7 +332,3 @@ To deploy this app to AGS, follow the steps below.
 
 For more information on how to deploy an `Extend Service Extension` app, see 
 [here](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/getting-started-service-extension/#build-and-upload-the-extend-app).
-
-## Next Step
-
-Proceed to create your own `Extend Service Extension` app by modifying this project. See [here](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/customize-service-extension-app/) for more details.
