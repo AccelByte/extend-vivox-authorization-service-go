@@ -20,7 +20,7 @@ func TestGenerateTokenLogin(t *testing.T) {
 
 		return
 	}
-	loginToken, _, err := GenerateVivocLoginToken(signingKey, issuer, domain, userID, int64(serialNumber), expiredAt)
+	loginToken, _, err := GenerateVivocLoginToken(signingKey, issuer, domain, userID, int64(serialNumber), expiredAt, nil)
 
 	assert.Nil(t, err)
 	assert.Equal(t, "e30.eyJpc3MiOiJkZW1vIiwiZXhwIjoxNDUxNjA2NDAwLCJ2eGEiOiJsb2dpbiIsInZ4aSI6MTAwNDcsImYiOiJzaXA6LmRlbW8uYmFsZGVhZ2xlLjE5NzMuQHRsYS52aXZveC5jb20ifQ.LYDtnS20oRhk6mue5gZK0PkKjLWhPoB7w17fLr0cnCw", loginToken)
@@ -35,7 +35,7 @@ func TestGenerateTokenJoin(t *testing.T) {
 		return
 	}
 	channelID := "Qe3MHlbSq"
-	loginToken, _, err := GenerateVivoxJoinToken(signingKey, issuer, domain, userID, ChannelNonPositional, channelID, int64(serialNumber), expiredAt)
+	loginToken, _, err := GenerateVivoxJoinToken(signingKey, issuer, domain, userID, ChannelNonPositional, channelID, int64(serialNumber), expiredAt, nil)
 
 	assert.Nil(t, err)
 	assert.Equal(t, "e30.eyJpc3MiOiJkZW1vIiwiZXhwIjoxNDUxNjA2NDAwLCJ2eGEiOiJqb2luIiwidnhpIjo0NDY5MDUsImYiOiJzaXA6LmRlbW8uYmFsZGVhZ2xlLjE5NzMuQHRsYS52aXZveC5jb20iLCJ0Ijoic2lwOmNvbmZjdGwtZy1kZW1vLlFlM01IbGJTcUB0bGEudml2b3guY29tIn0.U_g8ZuxpJAy66myU-DdhCdjOcsdtT_Rce7cbawWBkxU",
@@ -51,7 +51,7 @@ func TestGenerateTokenKick(t *testing.T) {
 		return
 	}
 	channelID := "Qe3MHlbSq"
-	loginToken, _, err := GenerateVivoxKickToken(signingKey, issuer, domain, fromUserID, toUserID, ChannelNonPositional, channelID, int64(serialNumber), expiredAt)
+	loginToken, _, err := GenerateVivoxKickToken(signingKey, issuer, domain, fromUserID, toUserID, ChannelNonPositional, channelID, int64(serialNumber), expiredAt, nil)
 
 	assert.Nil(t, err)
 	assert.Equal(t, "e30.eyJpc3MiOiJkZW1vIiwiZXhwIjoxNDUxNjA2NDAwLCJ2eGEiOiJraWNrIiwidnhpIjozMDMxNjcsInN1YiI6InNpcDouZGVtby5raW5nZmlzaGVyLjEzNjQuQHRsYS52aXZveC5jb20iLCJmIjoic2lwOi5kZW1vLkRlbW8tQWRtaW4uQHRsYS52aXZveC5jb20iLCJ0Ijoic2lwOmNvbmZjdGwtZy1kZW1vLlFlM01IbGJTcUB0bGEudml2b3guY29tIn0.rdH3AMkfhl0zB-dOKtMlHjkyQit5Lsc-WJJYhUK08Yc",
