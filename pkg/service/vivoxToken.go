@@ -10,20 +10,23 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"strings"
 	"time"
+
+	utils "extend-rtu-vivox-authorization-service/pkg/common"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
-type Payload struct {
-	Iss string `json:"iss"`
-	Exp int64  `json:"exp"`
-	Vxa string `json:"vxa"`
+type Claims struct {
 	Vxi int64  `json:"vxi"`
 	Sub string `json:"sub,omitempty"`
 	F   string `json:"f,omitempty"`
+	Iss string `json:"iss"`
+	Vxa string `json:"vxa"`
 	T   string `json:"t,omitempty"`
+	Exp int64  `json:"exp"`
 }
 type Token struct {
 	AccessToken string
@@ -39,114 +42,132 @@ const (
 	ChannelEcho          = "-e-"
 	ChannelNonPositional = "-g-"
 	ChannelPositional    = "-d-"
+
+	ChannelPrefix = "confctl"
+	Protocol      = "sip"
+)
+
+var (
+	defaultExpiry = 90
+	issuer        = utils.GetEnv("VIVOX_ISSUER", "demo")
+	domain        = utils.GetEnv("VIVOX_DOMAIN", "tla.vivox.com")
+	signingKey    = utils.GetEnv("VIVOX_SIGNING_KEY", "secret!")
 )
 
 func GenerateVivocLoginToken(
 	signingKey, issuer, domain, username string,
 	serialNumber int64,
-	expiredAt time.Time) (token string, uri string, err error) {
+	expiredAt time.Time, claims *Claims) (token string, uri string, err error) {
 	header := make(map[string]any)
 	expireAtFloat := float64(expiredAt.Unix())
-	payload := Payload{
-		Iss: issuer,
-		Exp: int64(expireAtFloat),
-		Vxa: ActionLogin,
-		Vxi: serialNumber,
-		F:   protocol + ":" + userName(issuer, username) + "@" + domain,
+	if claims == nil {
+		claims = &Claims{
+			Iss: issuer,
+			Exp: int64(expireAtFloat),
+			Vxa: ActionLogin,
+			Vxi: serialNumber,
+			F:   Protocol + ":" + userName(issuer, username) + "@" + domain,
+		}
 	}
 
-	t, e := makeVivoxToken(signingKey, header, payload)
+	t, e := makeVivoxToken(signingKey, header, *claims)
 	if e != nil {
 		logrus.Error(e)
 
 		return "", "", e
 	}
 
-	return t, payload.T, nil
+	return t, claims.T, nil
 }
 func GenerateVivoxJoinToken(
 	signingKey, issuer, domain, username, channelType, channelID string,
 	uniqueNumber int64,
-	expiredAt time.Time) (token string, uri string, err error) {
+	expiredAt time.Time, claims *Claims) (token string, uri string, err error) {
 	header := make(map[string]any)
 	expireAtFloat := float64(expiredAt.Unix())
-	payload := Payload{
-		Iss: issuer,
-		Exp: int64(expireAtFloat),
-		Vxa: ActionJoin,
-		Vxi: uniqueNumber,
-		F:   protocol + ":" + userName(issuer, username) + "@" + domain,
-		T:   protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+	if claims == nil {
+		claims = &Claims{
+			Iss: issuer,
+			Exp: int64(expireAtFloat),
+			Vxa: ActionJoin,
+			Vxi: uniqueNumber,
+			F:   Protocol + ":" + userName(issuer, username) + "@" + domain,
+			T:   Protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+		}
 	}
 
-	t, e := makeVivoxToken(signingKey, header, payload)
+	t, e := makeVivoxToken(signingKey, header, *claims)
 	if e != nil {
 		logrus.Error(e)
 
 		return "", "", e
 	}
 
-	return t, payload.T, nil
+	return t, claims.T, nil
 }
 func GenerateVivoxJoinMuteToken(
 	signingKey, issuer, domain, username, channelType, channelID string,
 	serialNumber int64,
-	expiredAt time.Time) (token string, uri string, err error) {
+	expiredAt time.Time, claims *Claims) (token string, uri string, err error) {
 	header := make(map[string]any)
 	expireAtFloat := float64(expiredAt.Unix())
-	payload := Payload{
-		Iss: issuer,
-		Exp: int64(expireAtFloat),
-		Vxa: ActionJoinMuted,
-		Vxi: serialNumber,
-		F:   protocol + ":" + userName(issuer, username) + "@" + domain,
-		T:   protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+	if claims == nil {
+		claims = &Claims{
+			Iss: issuer,
+			Exp: int64(expireAtFloat),
+			Vxa: ActionJoinMuted,
+			Vxi: serialNumber,
+			F:   Protocol + ":" + userName(issuer, username) + "@" + domain,
+			T:   Protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+		}
 	}
 
-	t, e := makeVivoxToken(signingKey, header, payload)
+	t, e := makeVivoxToken(signingKey, header, *claims)
 	if e != nil {
 		logrus.Error(e)
 
 		return "", "", e
 	}
 
-	return t, payload.T, nil
+	return t, claims.T, nil
 }
 func GenerateVivoxKickToken(
 	signingKey, issuer, domain, fromUserID, toUserID, channelType, channelID string,
 	serialNumber int64,
-	expiredAt time.Time) (token string, uri string, err error) {
+	expiredAt time.Time, claims *Claims) (token string, uri string, err error) {
 	header := make(map[string]any)
 	expireAtFloat := float64(expiredAt.Unix())
-	payload := Payload{
-		Iss: issuer,
-		Exp: int64(expireAtFloat),
-		Vxa: ActionKick,
-		Vxi: serialNumber,
-		Sub: protocol + ":" + userName(issuer, toUserID) + "@" + domain,
-		F:   protocol + ":" + userName(issuer, fromUserID) + "@" + domain,
-		T:   protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+	if claims == nil {
+		claims = &Claims{
+			Iss: issuer,
+			Exp: int64(expireAtFloat),
+			Vxa: ActionKick,
+			Vxi: serialNumber,
+			Sub: Protocol + ":" + userName(issuer, toUserID) + "@" + domain,
+			F:   Protocol + ":" + userName(issuer, fromUserID) + "@" + domain,
+			T:   Protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+		}
 	}
 
-	t, e := makeVivoxToken(signingKey, header, payload)
+	t, e := makeVivoxToken(signingKey, header, *claims)
 	if e != nil {
 		logrus.Error(e)
 
 		return "", "", e
 	}
 
-	return t, payload.T, nil
+	return t, claims.T, nil
 }
 
 func channelName(channelType, issuer, channelID string) string {
-	return channelPrefix + "-" + channelType + "-" + issuer + "." + channelID
+	return ChannelPrefix + "." + channelType + "." + issuer + "." + channelID
 }
 func userName(issuer, userID string) string {
 	return "." + issuer + "." + userID + "."
 }
 func makeVivoxToken(signingKey string,
 	header map[string]any,
-	payload Payload) (string, error) {
+	claims Claims) (string, error) {
 	headerMarshal, err := json.Marshal(header)
 	if err != nil {
 		text := fmt.Sprintf("error make token: %v", err)
@@ -155,7 +176,7 @@ func makeVivoxToken(signingKey string,
 		return "", errors.New(text)
 	}
 	encodedHeader := Base64URLEncode(string(headerMarshal))
-	payloadMarshal, err := json.Marshal(payload)
+	payloadMarshal, err := json.Marshal(claims)
 	if err != nil {
 		text := fmt.Sprintf("error make token: %v", err)
 		logrus.Error(text)
@@ -164,7 +185,7 @@ func makeVivoxToken(signingKey string,
 	}
 	payloadString := string(payloadMarshal)
 	encodedPayload := Base64URLEncode(payloadString)
-	signature, err := Sign(header, payload, signingKey)
+	signature, err := Sign(header, claims, signingKey)
 	if err != nil {
 		text := fmt.Sprintf("error make token: %v", err)
 		logrus.Error(text)
@@ -175,15 +196,15 @@ func makeVivoxToken(signingKey string,
 	return strings.Join([]string{encodedHeader, encodedPayload, signature}, "."), nil
 }
 
-func Sign(header map[string]any, payload Payload, key string) (string, error) {
+func Sign(header map[string]any, claims Claims, key string) (string, error) {
 	headerMarshal, err := json.Marshal(header)
 	if err != nil {
 		return "", fmt.Errorf("failed to encode header when signing token with error %w", err)
 	}
 	headerString := string(headerMarshal)
-	payloadMarshal, err := json.Marshal(payload)
+	payloadMarshal, err := json.Marshal(claims)
 	if err != nil {
-		return "", fmt.Errorf("failed to encode payload when signing token with error %w", err)
+		return "", fmt.Errorf("failed to encode claims when signing token with error %w", err)
 	}
 	payloadString := string(payloadMarshal)
 	base64Header := Base64URLEncode(headerString)

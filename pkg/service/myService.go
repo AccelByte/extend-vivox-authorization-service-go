@@ -6,11 +6,10 @@ package service
 
 import (
 	"context"
-	pb "extend-rtu-vivox-authorization-service/pkg/pb"
-	"math/rand"
-	"os"
 	"time"
 
+	utils "extend-rtu-vivox-authorization-service/pkg/common"
+	pb "extend-rtu-vivox-authorization-service/pkg/pb"
 	"github.com/AccelByte/accelbyte-go-sdk/services-api/pkg/repository"
 
 	"google.golang.org/grpc/codes"
@@ -22,84 +21,99 @@ type MyServiceServerImpl struct {
 	tokenRepo   repository.TokenRepository
 	configRepo  repository.ConfigRepository
 	refreshRepo repository.RefreshTokenRepository
+	claims      *Claims
 }
 
 func NewMyServiceServer(
 	tokenRepo repository.TokenRepository,
 	configRepo repository.ConfigRepository,
 	refreshRepo repository.RefreshTokenRepository,
+	claims *Claims,
 ) *MyServiceServerImpl {
 	return &MyServiceServerImpl{
 		tokenRepo:   tokenRepo,
 		configRepo:  configRepo,
 		refreshRepo: refreshRepo,
+		claims:      claims,
 	}
 }
-
-// TODO move this to config
-var (
-	signingKey    = ""
-	issuer        = "demo"
-	domain        = "tla.vivox.com"
-	channelPrefix = "confctl"
-	protocol      = "sip"
-	defaultExpiry = 90
-	vIssuer       = os.Getenv("VIVOX_ISSUER")
-	vDomain       = os.Getenv("VIVOX_DOMAIN")
-	vSigningKey   = os.Getenv("VIVOX_SIGNING_KEY")
-)
 
 func (g MyServiceServerImpl) GenerateVivoxToken(
 	ctx context.Context, req *pb.GenerateVivoxTokenRequest,
 ) (*pb.GenerateVivoxTokenResponse, error) {
+	var accessToken, uri string
+	var err error
 
-	if vIssuer != "" {
-		issuer = vIssuer
+	switch req.Type.String() {
+	case ActionLogin:
+		accessToken, uri, err = GenerateVivocLoginToken(
+			signingKey,
+			issuer,
+			domain,
+			req.Username,
+			utils.RandomNumber(4),
+			time.Now().Add(time.Duration(defaultExpiry)),
+			g.claims,
+		)
+
+	case ActionJoin:
+		accessToken, uri, err = GenerateVivoxJoinToken(
+			signingKey,
+			issuer,
+			domain,
+			req.Username,
+			req.ChannelType.String(),
+			req.ChannelId,
+			utils.RandomNumber(4),
+			time.Now().Add(time.Duration(defaultExpiry)),
+			g.claims,
+		)
+
+	case ActionJoinMuted:
+		accessToken, uri, err = GenerateVivoxJoinMuteToken(
+			signingKey,
+			issuer,
+			domain,
+			req.Username,
+			req.ChannelType.String(),
+			req.ChannelId,
+			utils.RandomNumber(4),
+			time.Now().Add(time.Duration(defaultExpiry)),
+			g.claims,
+		)
+
+	case ActionMute:
+		accessToken, uri, err = GenerateVivoxJoinMuteToken(
+			signingKey,
+			issuer,
+			domain,
+			req.Username,
+			req.ChannelType.String(),
+			req.ChannelId,
+			utils.RandomNumber(4),
+			time.Now().Add(time.Duration(defaultExpiry)),
+			g.claims,
+		)
+
+	case ActionKick:
+		accessToken, uri, err = GenerateVivoxKickToken(
+			signingKey,
+			issuer,
+			domain,
+			req.Username,
+			req.TargetUsername,
+			req.ChannelType.String(),
+			req.ChannelId,
+			utils.RandomNumber(4),
+			time.Now().Add(time.Duration(defaultExpiry)),
+			g.claims,
+		)
 	}
 
-	if vDomain != "" {
-		domain = vDomain
-	}
-
-	if vSigningKey != "" {
-		signingKey = vSigningKey
-	}
-
-	// TODO check the serial number
-	accessToken, uri, err := GenerateVivoxJoinToken(
-		signingKey,
-		issuer,
-		domain,
-		req.Username,
-		req.ChannelType.String(),
-		req.ChannelId,
-		randomNumber(4),
-		time.Now().Add(time.Duration(defaultExpiry)),
-	)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "error generate Vivox auth token: %v", err)
 	}
 
 	// Return the token
 	return &pb.GenerateVivoxTokenResponse{AccessToken: accessToken, Uri: uri}, nil
-}
-
-func randomNumber(n int) int64 {
-	if n <= 0 {
-		return 0
-	}
-
-	lowerBound := int64(1)
-	upperBound := int64(9)
-
-	for i := 1; i < n; i++ {
-		lowerBound *= 10
-		upperBound = upperBound*10 + 9
-	}
-
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-
-	randomNum := lowerBound + r.Int63n(upperBound-lowerBound+1)
-
-	return randomNum
 }

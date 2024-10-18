@@ -139,7 +139,7 @@ func main() {
 	}
 
 	// Register Vivox Service
-	myServiceServer := service.NewMyServiceServer(tokenRepo, configRepo, refreshRepo)
+	myServiceServer := service.NewMyServiceServer(tokenRepo, configRepo, refreshRepo, nil)
 	pb.RegisterServiceServer(s, myServiceServer)
 
 	// Enable gRPC Reflection
