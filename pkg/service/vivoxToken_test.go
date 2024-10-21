@@ -23,7 +23,7 @@ func TestGenerateTokenLogin(t *testing.T) {
 	loginToken, _, err := GenerateVivocLoginToken(signingKey, issuer, domain, userID, int64(serialNumber), expiredAt, nil)
 
 	assert.Nil(t, err)
-	assert.Equal(t, "e30.eyJpc3MiOiJkZW1vIiwiZXhwIjoxNDUxNjA2NDAwLCJ2eGEiOiJsb2dpbiIsInZ4aSI6MTAwNDcsImYiOiJzaXA6LmRlbW8uYmFsZGVhZ2xlLjE5NzMuQHRsYS52aXZveC5jb20ifQ.LYDtnS20oRhk6mue5gZK0PkKjLWhPoB7w17fLr0cnCw", loginToken)
+	assert.Equal(t, "e30.eyJ2eGkiOjEwMDQ3LCJmIjoic2lwOi5kZW1vLmJhbGRlYWdsZS4xOTczLkB0bGEudml2b3guY29tIiwiaXNzIjoiZGVtbyIsInZ4YSI6ImxvZ2luIiwiZXhwIjoxNDUxNjA2NDAwfQ.yJIgDg_l4hvkofzDXQEzuCELuLhurn_DVgF2mmUZls8", loginToken)
 }
 func TestGenerateTokenJoin(t *testing.T) {
 	userID := "baldeagle.1973"
@@ -38,7 +38,7 @@ func TestGenerateTokenJoin(t *testing.T) {
 	loginToken, _, err := GenerateVivoxJoinToken(signingKey, issuer, domain, userID, ChannelNonPositional, channelID, int64(serialNumber), expiredAt, nil)
 
 	assert.Nil(t, err)
-	assert.Equal(t, "e30.eyJpc3MiOiJkZW1vIiwiZXhwIjoxNDUxNjA2NDAwLCJ2eGEiOiJqb2luIiwidnhpIjo0NDY5MDUsImYiOiJzaXA6LmRlbW8uYmFsZGVhZ2xlLjE5NzMuQHRsYS52aXZveC5jb20iLCJ0Ijoic2lwOmNvbmZjdGwtZy1kZW1vLlFlM01IbGJTcUB0bGEudml2b3guY29tIn0.U_g8ZuxpJAy66myU-DdhCdjOcsdtT_Rce7cbawWBkxU",
+	assert.Equal(t, "e30.eyJ2eGkiOjQ0NjkwNSwiZiI6InNpcDouZGVtby5iYWxkZWFnbGUuMTk3My5AdGxhLnZpdm94LmNvbSIsImlzcyI6ImRlbW8iLCJ2eGEiOiJqb2luIiwidCI6InNpcDpjb25mY3RsLi1nLS5kZW1vLlFlM01IbGJTcUB0bGEudml2b3guY29tIiwiZXhwIjoxNDUxNjA2NDAwfQ.9Tf-7kDZAdbCI9sI0KcX6qpxjwqIqXloaS7VSqFDvXY",
 		loginToken)
 }
 func TestGenerateTokenKick(t *testing.T) {
@@ -54,6 +54,6 @@ func TestGenerateTokenKick(t *testing.T) {
 	loginToken, _, err := GenerateVivoxKickToken(signingKey, issuer, domain, fromUserID, toUserID, ChannelNonPositional, channelID, int64(serialNumber), expiredAt, nil)
 
 	assert.Nil(t, err)
-	assert.Equal(t, "e30.eyJpc3MiOiJkZW1vIiwiZXhwIjoxNDUxNjA2NDAwLCJ2eGEiOiJraWNrIiwidnhpIjozMDMxNjcsInN1YiI6InNpcDouZGVtby5raW5nZmlzaGVyLjEzNjQuQHRsYS52aXZveC5jb20iLCJmIjoic2lwOi5kZW1vLkRlbW8tQWRtaW4uQHRsYS52aXZveC5jb20iLCJ0Ijoic2lwOmNvbmZjdGwtZy1kZW1vLlFlM01IbGJTcUB0bGEudml2b3guY29tIn0.rdH3AMkfhl0zB-dOKtMlHjkyQit5Lsc-WJJYhUK08Yc",
+	assert.Equal(t, "e30.eyJ2eGkiOjMwMzE2Nywic3ViIjoic2lwOi5kZW1vLmtpbmdmaXNoZXIuMTM2NC5AdGxhLnZpdm94LmNvbSIsImYiOiJzaXA6LmRlbW8uRGVtby1BZG1pbi5AdGxhLnZpdm94LmNvbSIsImlzcyI6ImRlbW8iLCJ2eGEiOiJraWNrIiwidCI6InNpcDpjb25mY3RsLi1nLS5kZW1vLlFlM01IbGJTcUB0bGEudml2b3guY29tIiwiZXhwIjoxNDUxNjA2NDAwfQ.1wwCKtFRffxxIp9aBYvCV9tAhkCZBFcX52_5t92KUho",
 		loginToken)
 }
