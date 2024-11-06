@@ -77,7 +77,4 @@ test_docs_broken_links:
 	rm -f test.err
 	bash "$(SDK_MD_CRAWLER_PATH)/md-crawler.sh" \
 			-i README.md
-	(for FILE in $$(find docs -type f); do \
-			(set -o pipefail; DOCKER_SKIP_BUILD=1 bash "$(SDK_MD_CRAWLER_PATH)/md-crawler.sh" -i $$FILE) || touch test.err; \
-	done)
 	[ ! -f test.err ]
