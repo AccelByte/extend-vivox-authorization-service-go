@@ -47,7 +47,7 @@ build: proto
 			-v $$(pwd):/data \
 			-w /data \
 			$(GOLANG_DOCKER_IMAGE) \
-			sh -c "go build -v"
+			sh -c "go build -modcacherw -v"
 
 image:
 	docker buildx build -t ${IMAGE_NAME} --load .
@@ -70,7 +70,7 @@ test:
 		-v $$(pwd):/data/ -w /data/ \
 		-e GOCACHE=/data/.cache/go-build \
 		-e BASE_PATH=/vivoxauth \
-		$(GOLANG_DOCKER_IMAGE) sh -c "go test -v ./..."
+		$(GOLANG_DOCKER_IMAGE) sh -c "go test -modcacherw -v ./..."
 
 test_docs_broken_links:
 	@test -n "$(SDK_MD_CRAWLER_PATH)" || (echo "SDK_MD_CRAWLER_PATH is not set" ; exit 1)
