@@ -66,7 +66,7 @@ You can clone this repository to modify and develop your own
 endpoints in `service.proto` file and implementing the handlers for those
 endpoints.
 
-Please refer to [Extend Service Extension](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/) documentation on how to customize Extend Service Extension app.
+If you need to customize this app, please refer to our [Extend Service Extension](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/) documentation.
 
 
 ## Prerequisites
