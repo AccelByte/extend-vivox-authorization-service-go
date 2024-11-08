@@ -2,6 +2,61 @@
 
 A Vivox authentication service is essential for integrating AccelByte Gaming Services (AGS), Vivox, and game clients. It generates the signed Vivox token that game clients need to interact with Vivox. This token is valid for 90 seconds, so game clients must regularly call the service to obtain a new token.
 
+```mermaid
+sequenceDiagram
+    autonumber
+
+    participant GC as Game Client<br>(or Game Server)
+    box YOU ARE HERE
+        participant ESE as Vivox Authentication Service<br>(Extend Service Extension app)
+    end
+    participant V as Vivox
+
+    note over GC, V: A. Vivox login
+
+    GC ->> ESE: Get Vivox login token
+    activate ESE
+    ESE -->> GC: Return Vivox login token
+    deactivate ESE
+    GC ->> V : Vivox login (login token, user id)
+    activate V
+    V -->> GC: Vivox login success
+    deactivate V
+
+    note over GC, V: B. Vivox join
+
+    GC ->> ESE: Get Vivox join token
+    activate ESE
+    ESE -->> GC: Return Vivox join token
+    deactivate ESE
+    GC ->> V : Vivox join (join token, channel id)
+    activate V
+    V -->> GC: Vivox join success
+    deactivate V
+
+    note over GC, V: C. Vivox join muted
+
+    GC ->> ESE: Get Vivox join muted token
+    activate ESE
+    ESE -->> GC: Return Vivox join muted token
+    deactivate ESE
+    GC ->> V : Vivox join muted (join muted token, channel id)
+    activate V
+    V -->> GC: Vivox join muted success
+    deactivate V
+
+    note over GC, V: D. Vivox kick
+
+    GC ->> ESE: Get Vivox kick token
+    activate ESE
+    ESE -->> GC: Return Vivox kick token
+    deactivate ESE
+    GC ->> V : Vivox kick (kick token, channel id)
+    activate V
+    V -->> GC: Vivox kick success
+    deactivate V
+```
+
 ## Overview
 
 This repository provides a project template for an `Vivox Authorization Service` Extend Service Extension app written in `Go`. It includes a ready to use service to generate Vivox access token. This web service created using a stack that includes a `gRPC Server` and the [gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway?tab=readme-ov-file#about). Additionally, it comes with built-in instrumentation for observability, ensuring that metrics, traces, and logs are available upon deployment.
