@@ -6,7 +6,7 @@ A Vivox authentication service is essential for integrating AccelByte Gaming Ser
 
 This repository provides a project template for an `Vivox Authorization Service` Extend Service Extension app written in `Go`. It includes a ready to use service to generate Vivox access token. This web service created using a stack that includes a `gRPC Server` and the [gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway?tab=readme-ov-file#about). Additionally, it comes with built-in instrumentation for observability, ensuring that metrics, traces, and logs are available upon deployment.
 
-You can clone this repository to modify and develope your own
+You can clone this repository to modify and develop your own
 `Vivox Authorization Service` Extend app. Simply modify this project by defining your
 endpoints in `service.proto` file and implementing the handlers for those
 endpoints.
