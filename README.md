@@ -173,6 +173,11 @@ Please refer to [Extend Service Extension](https://docs.accelbyte.io/gaming-serv
       - IAM -> Roles (Read)
       - Basic -> Namespace (Read)
 
+3. Your Vivox configuration.
+   - Vivox application-specific issuer name
+   - Vivox domain name
+   - Vivox signing key
+
 ## Setup
 
 To be able to run this app, you will need to follow these setup steps.
