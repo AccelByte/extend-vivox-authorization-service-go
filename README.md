@@ -147,9 +147,13 @@ If you need to customize this app, please refer to our [Extend Service Extension
       go version go1.20.0 ...
       ```
 
-   e. [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli)
+   e. [Postman](https://www.postman.com/)
 
-   - Use the available binary from [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli/releases).
+      - Use binary available [here](https://www.postman.com/downloads/)
+
+   f. [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli)
+
+      - Use the available binary from [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli/releases).
 
    > :exclamation: In macOS, you may use [Homebrew](https://brew.sh/) to easily install some of the tools above.
 
