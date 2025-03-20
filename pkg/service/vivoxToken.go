@@ -160,11 +160,21 @@ func GenerateVivoxKickToken(
 }
 
 func channelName(channelType, issuer, channelID string) string {
-	return ChannelPrefix + "." + channelType + "." + issuer + "." + channelID
+	channelTypeCode := ""
+	if channelType == "echo" {
+		channelTypeCode = ChannelEcho
+	} else if channelType == "positional" {
+		channelTypeCode = ChannelPositional
+	} else if channelType == "nonpositional" {
+		channelTypeCode = ChannelNonPositional
+	}
+	return ChannelPrefix + channelTypeCode + issuer + "." + channelID
 }
+
 func userName(issuer, userID string) string {
 	return "." + issuer + "." + userID + "."
 }
+
 func makeVivoxToken(signingKey string,
 	header map[string]any,
 	claims Claims) (string, error) {
