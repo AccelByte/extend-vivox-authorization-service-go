@@ -17,6 +17,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/go-openapi/loads"
@@ -224,8 +225,10 @@ func main() {
 	logrus.Infof("gRPC server started")
 	logrus.Infof("app server started on base path: " + common.BasePath)
 
-	ctx, _ = signal.NotifyContext(ctx, os.Interrupt)
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
 	<-ctx.Done()
+	logrus.Infof("signal received")
 }
 
 func newGRPCGatewayHTTPServer(
