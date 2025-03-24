@@ -283,7 +283,7 @@ This app can be tested locally through the Swagger UI.
    be able to access the REST API service. 
    
    To get a user access access token, you can use
-   [get-user-access-token.postman_collection.json](demo/get-user-access-token.postman_collection.json).
+   [get-access-token.postman_collection.json](demo/get-access-token.postman_collection.json).
    Import the Postman collection to your Postman workspace and create a 
    Postman environment containing the following variables.
 
