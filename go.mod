@@ -3,7 +3,7 @@ module extend-rtu-vivox-authorization-service
 go 1.20
 
 require (
-	github.com/AccelByte/accelbyte-go-sdk v0.78.1-0.20250319093635-48d06e1a5166
+	github.com/AccelByte/accelbyte-go-sdk v0.80.0
 	github.com/go-openapi/loads v0.20.2
 	github.com/golang/mock v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.0-rc.5
