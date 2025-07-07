@@ -4,19 +4,28 @@
 
 SHELL := /bin/bash
 
-GOLANG_DOCKER_IMAGE := golang:1.20
+PROJECT_NAME := $(shell basename "$$(pwd)")
+GOLANG_IMAGE := golang:1.20
+
+BUILD_CACHE_VOLUME := $(shell echo '$(PROJECT_NAME)' | sed 's/[^a-zA-Z0-9_-]//g')-build-cache
 
 IMAGE_NAME := $(shell basename "$$(pwd)")-app
 BUILDER := extend-builder
 
 build: proto
 	docker run -t --rm \
+			-v $(BUILD_CACHE_VOLUME):/tmp/build-cache \
+			$(GOLANG_IMAGE) \
+			chown $$(id -u):$$(id -g) /tmp/build-cache		# For MacOS docker host: Workaround for /tmp/build-cache folder
+	docker run -t --rm \
 			-u $$(id -u):$$(id -g) \
-			-e GOCACHE=/data/.cache/go-build \
-			-v $$(pwd):/data \
-			-w /data \
-			$(GOLANG_DOCKER_IMAGE) \
-			sh -c "go build -modcacherw -v"
+			-e GOCACHE=/tmp/build-cache/go/cache \
+			-e GOMODCACHE=/tmp/build-cache/go/modcache \
+			-v $(BUILD_CACHE_VOLUME):/tmp/build-cache \
+			-v $$(pwd):/data/ \
+			-w /data/ \
+			$(GOLANG_IMAGE) \
+			go build -modcacherw
 
 proto:
 	docker run -t --rm -u $$(id -u):$$(id -g) \
@@ -45,9 +54,12 @@ imagex_push:
 test:
 	docker run -t --rm -u $$(id -u):$$(id -g) \
 		-v $$(pwd):/data/ -w /data/ \
-		-e GOCACHE=/data/.cache/go-build \
+		-e GOCACHE=/tmp/build-cache/go/cache \
+		-e GOMODCACHE=/tmp/build-cache/go/modcache \
 		-e BASE_PATH=/vivoxauth \
-		$(GOLANG_DOCKER_IMAGE) sh -c "go test -modcacherw -v ./..."
+		-v $(BUILD_CACHE_VOLUME):/tmp/build-cache \
+		$(GOLANG_IMAGE) \
+		go test -modcacherw -v ./...
 
 test_docs_broken_links:
 	@test -n "$(SDK_MD_CRAWLER_PATH)" || (echo "SDK_MD_CRAWLER_PATH is not set" ; exit 1)
