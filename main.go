@@ -115,7 +115,7 @@ func main() {
 		common.Validator = common.NewTokenValidator(oauthService, time.Duration(refreshInterval)*time.Second, true)
 		err := common.Validator.Initialize(ctx)
 		if err != nil {
-			logrus.Infof(err.Error())
+			logrus.Info(err.Error())
 		}
 
 		permissionExtractor := common.NewProtoPermissionExtractor()
@@ -226,7 +226,7 @@ func main() {
 		}
 	}()
 	logrus.Infof("gRPC server started")
-	logrus.Infof("app server started on base path: " + common.BasePath)
+	logrus.Infof("app server started on base path: %s", common.BasePath)
 
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
