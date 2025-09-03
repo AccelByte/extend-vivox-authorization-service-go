@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "3e3305a3-bc6f-498f-adae-5a6f79a9f96d",
+		"_postman_id": "a4509237-261b-49a4-8098-3ae79a9e3ac2",
 		"name": "Vivox Extend Service Extension Demo",
-		"description": "This `collection` requires an `environment` with the following variables.\n\n- `AB_BASE_URL`\n- `AB_NAMESPACE`\n- `AB_CLIENT_ID`\n- `AB_CLIENT_SECRET`\n- `EXTEND_APP_SERVICE_URL`\n    \n\nYou will need following permissions for the IAM Client.  \nFor AGS Private Cloud customers:\n\n- `ADMIN:ROLE [CREATE, READ, UPDATE, DELETE]`\n    - `[CREATE, UPDATE, DELETE]` is needed to create, add, and clean up the role that contains the custom permission `ADMIN:NAMESPACE:{namespace}:VIVOX:TOKEN`\n- `ADMIN:NAMESPACE:{namespace}:ROLE:USER:\\* [UPDATE]`\n    \n    - `[UPDATE]` is needed to add role to the user\n- `ADMIN:NAMESPACE:{namespace}:NAMESPACE [READ]`\n- `ADMIN:NAMESPACE:{namespace}:VIVOX:TOKEN [READ]`\n    \n\nFor AGS Shared Cloud customers:\n\n- IAM > Roles (Read)\n- Basic > Namespace (Read)\n    \n\n> Note: Creating and assigning custom roles and permissions is still not available in AGS Shared Cloud and is coming soon; so for now, setting `PLUGIN_GRPC_SERVER_AUTH_ENABLED` to `false` is needed. \n  \n\nMake sure you have deployed Extend Service Extension app. Get `EXTEND_APP_SERVICE_URL` from extend app page in admin portal. For local deployment, use local url instead.\n\nPlease read [getting started with Extend Service Extension](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/getting-started-service-extension/) and [Vivox authentication service sample](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/vivox-authentication-service/) for more information.",
+		"description": "This `collection` requires an `environment` with the following variables.\n\n- `AB_BASE_URL`\n    \n- `AB_NAMESPACE`\n    \n- `AB_CLIENT_ID`\n    \n- `AB_CLIENT_SECRET`\n    \n- `EXTEND_APP_SERVICE_URL`\n    \n\nYou will need following permissions for the IAM Client.  \nFor AGS Private Cloud customers:\n\n- `ADMIN:ROLE [READ]`\n    \n- `ADMIN:NAMESPACE:{namespace}:NAMESPACE [READ]`\n    \n\nFor AGS Shared Cloud customers:\n\n- IAM > Roles (Read)\n    \n- Basic > Namespace (Read)\n    \n\nMake sure you have deployed Extend Service Extension app. Get `EXTEND_APP_SERVICE_URL` from extend app page in admin portal. For local deployment, use local url instead.\n\nPlease read [getting started with Extend Service Extension](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/getting-started-service-extension/) and [Vivox authentication service sample](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/vivox-authentication-service/) for more information.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "17100405"
+		"_exporter_id": "16846723"
 	},
 	"item": [
 		{
@@ -72,124 +72,6 @@
 			"response": []
 		},
 		{
-			"name": "20-client-create-role",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", function () {\r",
-							"    pm.response.to.have.status(201);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Store role identifier in collection variable\", function () {\r",
-							"    var responseJson = pm.response.json();\r",
-							"    \r",
-							"    if (responseJson.roleId !== undefined) {\r",
-							"        pm.collectionVariables.set('TEST_ROLE_ID', responseJson.roleId)\r",
-							"    }\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{CLIENT_ACCESS_TOKEN}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"adminRole\": false,\n  \"deletable\": true,\n  \"isWildcard\": false,\n  \"roleName\": \"Vivox Role\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{AB_BASE_URL}}/iam/v4/admin/roles",
-					"host": [
-						"{{AB_BASE_URL}}"
-					],
-					"path": [
-						"iam",
-						"v4",
-						"admin",
-						"roles"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "21-client-add-role-permissions",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{CLIENT_ACCESS_TOKEN}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"permissions\": [\n    {\n      \"action\": 2,\n      \"resource\": \"ADMIN:NAMESPACE:{namespace}:VIVOX:TOKEN\"\n    }\n  ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{AB_BASE_URL}}/iam/v4/admin/roles/{{TEST_ROLE_ID}}/permissions",
-					"host": [
-						"{{AB_BASE_URL}}"
-					],
-					"path": [
-						"iam",
-						"v4",
-						"admin",
-						"roles",
-						"{{TEST_ROLE_ID}}",
-						"permissions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "22-client-create-test-user",
 			"event": [
 				{
@@ -249,63 +131,6 @@
 						"namespaces",
 						"{{AB_NAMESPACE}}",
 						"test_users"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "23-client-assign-role-to-test-user",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{CLIENT_ACCESS_TOKEN}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"assignedNamespaces\": [\n    \"{{AB_NAMESPACE}}\"\n  ],\n  \"roleId\": \"{{TEST_ROLE_ID}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{AB_BASE_URL}}/iam/v4/admin/namespaces/{{AB_NAMESPACE}}/users/{{TEST_USER_ID}}/roles",
-					"host": [
-						"{{AB_BASE_URL}}"
-					],
-					"path": [
-						"iam",
-						"v4",
-						"admin",
-						"namespaces",
-						"{{AB_NAMESPACE}}",
-						"users",
-						"{{TEST_USER_ID}}",
-						"roles"
 					]
 				}
 			},
@@ -727,58 +552,6 @@
 					"path": [
 						"v1",
 						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "91-client-delete-role",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.collectionVariables.set('TEST_ROLE_ID', \"\");"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{CLIENT_ACCESS_TOKEN}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"adminRole\": false,\n  \"deletable\": true,\n  \"isWildcard\": false,\n  \"roleName\": \"Vivox Role\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{AB_BASE_URL}}/iam/v4/admin/roles/{{TEST_ROLE_ID}}",
-					"host": [
-						"{{AB_BASE_URL}}"
-					],
-					"path": [
-						"iam",
-						"v4",
-						"admin",
-						"roles",
-						"{{TEST_ROLE_ID}}"
 					]
 				}
 			},
