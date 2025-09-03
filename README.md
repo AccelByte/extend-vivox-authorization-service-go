@@ -305,9 +305,6 @@ This app can be tested locally through the Swagger UI.
    }
    ```
 
-   > :info: Make sure the user has a role which contains this permission:
-   `ADMIN:NAMESPACE:{namespace}:VIVOX:TOKEN [READ]`.
-
 3. The REST API service can then be tested by opening Swagger UI at
    `http://localhost:8000/vivoxauth/apidocs/`. Use this to create an API request
    to try the endpoints.
