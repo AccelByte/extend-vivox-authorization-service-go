@@ -372,6 +372,15 @@ After completing testing, the next step is to deploy your app to `AccelByte Gami
    - `Namespace`
    - `App Name`
 
+   Under the **Environment Configuration** section, set the required secrets and/or variables.
+   - Secrets
+      - `AB_CLIENT_ID`
+      - `AB_CLIENT_SECRET`
+      - `VIVOX_SIGNING_KEY`
+   - Variables
+      - `VIVOX_ISSUER`
+      - `VIVOX_DOMAIN`
+
 2. **Build and Push the Container Image**
 
    Use [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli) to build and upload the container image.
