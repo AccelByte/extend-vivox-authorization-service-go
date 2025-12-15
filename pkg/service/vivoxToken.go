@@ -10,13 +10,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
 	utils "extend-rtu-vivox-authorization-service/pkg/common"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 type Claims struct {
@@ -72,7 +72,7 @@ func GenerateVivocLoginToken(
 
 	t, e := makeVivoxToken(signingKey, header, *claims)
 	if e != nil {
-		logrus.Error(e)
+		slog.Default().Error("error making vivox token", "error", e)
 
 		return "", "", e
 	}
@@ -98,7 +98,7 @@ func GenerateVivoxJoinToken(
 
 	t, e := makeVivoxToken(signingKey, header, *claims)
 	if e != nil {
-		logrus.Error(e)
+		slog.Default().Error("error making vivox token", "error", e)
 
 		return "", "", e
 	}
@@ -124,7 +124,7 @@ func GenerateVivoxJoinMuteToken(
 
 	t, e := makeVivoxToken(signingKey, header, *claims)
 	if e != nil {
-		logrus.Error(e)
+		slog.Default().Error("error making vivox token", "error", e)
 
 		return "", "", e
 	}
@@ -151,7 +151,7 @@ func GenerateVivoxKickToken(
 
 	t, e := makeVivoxToken(signingKey, header, *claims)
 	if e != nil {
-		logrus.Error(e)
+		slog.Default().Error("error making vivox token", "error", e)
 
 		return "", "", e
 	}
@@ -181,7 +181,7 @@ func makeVivoxToken(signingKey string,
 	headerMarshal, err := json.Marshal(header)
 	if err != nil {
 		text := fmt.Sprintf("error make token: %v", err)
-		logrus.Error(text)
+		slog.Default().Error(text)
 
 		return "", errors.New(text)
 	}
@@ -189,7 +189,7 @@ func makeVivoxToken(signingKey string,
 	payloadMarshal, err := json.Marshal(claims)
 	if err != nil {
 		text := fmt.Sprintf("error make token: %v", err)
-		logrus.Error(text)
+		slog.Default().Error(text)
 
 		return "", errors.New(text)
 	}
@@ -198,7 +198,7 @@ func makeVivoxToken(signingKey string,
 	signature, err := Sign(header, claims, signingKey)
 	if err != nil {
 		text := fmt.Sprintf("error make token: %v", err)
-		logrus.Error(text)
+		slog.Default().Error(text)
 
 		return "", errors.New(text)
 	}

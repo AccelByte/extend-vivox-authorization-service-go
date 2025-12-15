@@ -5,13 +5,12 @@
 package common
 
 import (
+	"log/slog"
 	"math/rand"
 	"os"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 func GetEnv(key, fallback string) string {
@@ -35,7 +34,8 @@ func GetEnvInt(key string, fallback int) int {
 func getBasePath() string {
 	basePath := GetEnv("BASE_PATH", "/vivoxauth")
 	if !strings.HasPrefix(basePath, "/") {
-		logrus.Fatalf("BASE_PATH envar is invalid, no leading '/' found. Valid example: /basePath")
+		slog.Default().Error("BASE_PATH envar is invalid, no leading '/' found. Valid example: /basePath")
+		os.Exit(1)
 	}
 
 	return basePath
