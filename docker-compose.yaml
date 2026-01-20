@@ -12,7 +12,6 @@ services:
       - AB_NAMESPACE=${AB_NAMESPACE}
       - PLUGIN_GRPC_SERVER_AUTH_ENABLED
       - OTEL_EXPORTER_ZIPKIN_ENDPOINT=http://host.docker.internal:9411/api/v2/spans # Zipkin
-      - OTEL_SERVICE_NAME=ExtendServiceExtensionServerGo
       - BASE_PATH
       - VIVOX_DOMAIN
       - VIVOX_ISSUER

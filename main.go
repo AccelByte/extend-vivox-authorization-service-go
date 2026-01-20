@@ -59,7 +59,7 @@ const (
 )
 
 var (
-	serviceName = common.GetEnv("OTEL_SERVICE_NAME", "ExtendRtuVivoxAuthGoDocker")
+	serviceName = "extend-app-vivox-auth"
 	logLevelStr = common.GetEnv("LOG_LEVEL", "info")
 )
 
@@ -211,6 +211,9 @@ func main() {
 	logger.Info("serving prometheus metrics", "port", metricsPort, "endpoint", metricsEndpoint)
 
 	// Set Tracer Provider
+	if val := common.GetEnv("OTEL_SERVICE_NAME", ""); val != "" {
+		serviceName = "extend-app-va-" + strings.ToLower(val)
+	}
 	tracerProvider, err := common.NewTracerProvider(serviceName, environment, id)
 	if err != nil {
 		logger.Error("failed to create tracer provider", "error", err)
