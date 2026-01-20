@@ -14,8 +14,6 @@ import (
 	"strings"
 	"time"
 
-	utils "extend-rtu-vivox-authorization-service/pkg/common"
-
 	"github.com/pkg/errors"
 )
 
@@ -42,16 +40,6 @@ const (
 	ChannelEcho          = "-e-"
 	ChannelNonPositional = "-g-"
 	ChannelPositional    = "-d-"
-
-	ChannelPrefix = "confctl"
-	Protocol      = "sip"
-)
-
-var (
-	defaultExpiry = 90
-	issuer        = utils.GetEnv("VIVOX_ISSUER", "demo")
-	domain        = utils.GetEnv("VIVOX_DOMAIN", "tla.vivox.com")
-	signingKey    = utils.GetEnv("VIVOX_SIGNING_KEY", "secret!")
 )
 
 func GenerateVivocLoginToken(
@@ -66,7 +54,7 @@ func GenerateVivocLoginToken(
 			Exp: int64(expireAtFloat),
 			Vxa: ActionLogin,
 			Vxi: serialNumber,
-			F:   Protocol + ":" + userName(issuer, username) + "@" + domain,
+			F:   protocol + ":" + userName(issuer, username) + "@" + domain,
 		}
 	}
 
@@ -91,8 +79,8 @@ func GenerateVivoxJoinToken(
 			Exp: int64(expireAtFloat),
 			Vxa: ActionJoin,
 			Vxi: uniqueNumber,
-			F:   Protocol + ":" + userName(issuer, username) + "@" + domain,
-			T:   Protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+			F:   protocol + ":" + userName(issuer, username) + "@" + domain,
+			T:   protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
 		}
 	}
 
@@ -117,8 +105,8 @@ func GenerateVivoxJoinMuteToken(
 			Exp: int64(expireAtFloat),
 			Vxa: ActionJoinMuted,
 			Vxi: serialNumber,
-			F:   Protocol + ":" + userName(issuer, username) + "@" + domain,
-			T:   Protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+			F:   protocol + ":" + userName(issuer, username) + "@" + domain,
+			T:   protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
 		}
 	}
 
@@ -143,9 +131,9 @@ func GenerateVivoxKickToken(
 			Exp: int64(expireAtFloat),
 			Vxa: ActionKick,
 			Vxi: serialNumber,
-			Sub: Protocol + ":" + userName(issuer, toUserID) + "@" + domain,
-			F:   Protocol + ":" + userName(issuer, fromUserID) + "@" + domain,
-			T:   Protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
+			Sub: protocol + ":" + userName(issuer, toUserID) + "@" + domain,
+			F:   protocol + ":" + userName(issuer, fromUserID) + "@" + domain,
+			T:   protocol + ":" + channelName(channelType, issuer, channelID) + "@" + domain,
 		}
 	}
 
@@ -168,7 +156,7 @@ func channelName(channelType, issuer, channelID string) string {
 	} else if channelType == "nonpositional" {
 		channelTypeCode = ChannelNonPositional
 	}
-	return ChannelPrefix + channelTypeCode + issuer + "." + channelID
+	return cPrefix + channelTypeCode + issuer + "." + channelID
 }
 
 func userName(issuer, userID string) string {

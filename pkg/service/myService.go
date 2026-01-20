@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	utils "extend-rtu-vivox-authorization-service/pkg/common"
@@ -38,76 +39,86 @@ func NewMyServiceServer(
 	}
 }
 
+var (
+	issuer     = utils.GetEnv("VIVOX_ISSUER", "")
+	domain     = utils.GetEnv("VIVOX_DOMAIN", "")
+	signingKey = utils.GetEnv("VIVOX_SIGNING_KEY", "")
+
+	// optional
+	expiry   = utils.GetEnvInt("VIVOX_DEFAULT_EXPIRY", 90)
+	protocol = utils.GetEnv("VIVOX_PROTOCOL", "sip")
+	cPrefix  = utils.GetEnv("VIVOX_CHANNEL_PREFIX", "confctl")
+)
+
 func (g MyServiceServerImpl) GenerateVivoxToken(
 	ctx context.Context, req *pb.GenerateVivoxTokenRequest,
 ) (*pb.GenerateVivoxTokenResponse, error) {
 	var accessToken, uri string
 	var err error
 
-	switch req.Type.String() {
-	case ActionLogin:
+	if errValidate := g.validateRequest(req); errValidate != nil {
+		return nil, errValidate
+	}
+
+	expiry := time.Now().Add(time.Duration(expiry) * time.Second)
+	uniqueNum := utils.RandomNumber(4)
+	cTypeStr := req.ChannelType.String()
+
+	// Route based on Enum
+	switch req.Type {
+	case pb.GenerateVivoxTokenRequestType_login:
 		accessToken, uri, err = GenerateVivocLoginToken(
 			signingKey,
 			issuer,
 			domain,
 			req.Username,
-			utils.RandomNumber(4),
-			time.Now().Add(time.Duration(defaultExpiry)),
+			uniqueNum,
+			expiry,
 			g.claims,
 		)
 
-	case ActionJoin:
+	case pb.GenerateVivoxTokenRequestType_join:
 		accessToken, uri, err = GenerateVivoxJoinToken(
 			signingKey,
 			issuer,
 			domain,
 			req.Username,
-			req.ChannelType.String(),
+			cTypeStr,
 			req.ChannelId,
-			utils.RandomNumber(4),
-			time.Now().Add(time.Duration(defaultExpiry)),
+			uniqueNum,
+			expiry,
 			g.claims,
 		)
 
-	case ActionJoinMuted:
+	case pb.GenerateVivoxTokenRequestType_join_muted:
 		accessToken, uri, err = GenerateVivoxJoinMuteToken(
 			signingKey,
 			issuer,
 			domain,
 			req.Username,
-			req.ChannelType.String(),
+			cTypeStr,
 			req.ChannelId,
-			utils.RandomNumber(4),
-			time.Now().Add(time.Duration(defaultExpiry)),
+			uniqueNum,
+			expiry,
 			g.claims,
 		)
 
-	case ActionMute:
-		accessToken, uri, err = GenerateVivoxJoinMuteToken(
-			signingKey,
-			issuer,
-			domain,
-			req.Username,
-			req.ChannelType.String(),
-			req.ChannelId,
-			utils.RandomNumber(4),
-			time.Now().Add(time.Duration(defaultExpiry)),
-			g.claims,
-		)
-
-	case ActionKick:
+	case pb.GenerateVivoxTokenRequestType_kick:
 		accessToken, uri, err = GenerateVivoxKickToken(
 			signingKey,
 			issuer,
 			domain,
 			req.Username,
 			req.TargetUsername,
-			req.ChannelType.String(),
+			cTypeStr,
 			req.ChannelId,
-			utils.RandomNumber(4),
-			time.Now().Add(time.Duration(defaultExpiry)),
+			uniqueNum,
+			expiry,
 			g.claims,
 		)
+
+	default:
+		return nil, status.Errorf(codes.InvalidArgument, "unsupported action type: %s", req.Type.String())
 	}
 
 	if err != nil {
@@ -116,4 +127,51 @@ func (g MyServiceServerImpl) GenerateVivoxToken(
 
 	// Return the token
 	return &pb.GenerateVivoxTokenResponse{AccessToken: accessToken, Uri: uri}, nil
+}
+
+func (g *MyServiceServerImpl) validateRequest(req *pb.GenerateVivoxTokenRequest) error {
+	if req == nil {
+		return status.Error(codes.InvalidArgument, "request body cannot be nil")
+	}
+
+	isInvalid := func(s string) bool {
+		return s == "" || strings.ToLower(s) == "string"
+	}
+
+	if isInvalid(signingKey) || isInvalid(issuer) || isInvalid(domain) {
+		return status.Error(codes.Internal, "vivox configuration (key/issuer/domain) is missing")
+	}
+
+	if req.Type == pb.GenerateVivoxTokenRequestType_generatevivoxtokenrequest_type_unknown {
+		return status.Error(codes.InvalidArgument, "a valid action type must be provided")
+	}
+
+	if isInvalid(req.Username) {
+		return status.Error(codes.InvalidArgument, "username is required")
+	}
+
+	switch req.Type {
+	case pb.GenerateVivoxTokenRequestType_join,
+		pb.GenerateVivoxTokenRequestType_join_muted:
+		if isInvalid(req.ChannelId) {
+			return status.Error(codes.InvalidArgument, "channel_id is required for join actions")
+		}
+		if isInvalid(req.Username) {
+			return status.Error(codes.InvalidArgument, "username is required for kick action")
+		}
+		cType := req.ChannelType.String()
+		if isInvalid(cType) || strings.Contains(strings.ToLower(cType), "unknown") {
+			return status.Error(codes.InvalidArgument, "valid channel_type is required. Please use one of these values: echo, positional, or nonpositional.")
+		}
+
+	case pb.GenerateVivoxTokenRequestType_kick:
+		if isInvalid(req.ChannelId) {
+			return status.Error(codes.InvalidArgument, "channel_id are required for kick")
+		}
+		if isInvalid(req.TargetUsername) {
+			return status.Error(codes.InvalidArgument, "target_username are required for kick")
+		}
+	}
+
+	return nil
 }
