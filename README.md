@@ -66,7 +66,7 @@ You can clone this repository to modify and develop your own
 endpoints in `service.proto` file and implementing the handlers for those
 endpoints.
 
-If you need to customize this app, please refer to our [Extend Service Extension](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/) documentation.
+If you need to customize this app, please refer to our [Extend Service Extension](https://docs.accelbyte.io/gaming-services/modules/foundations/extend/service-extension/) documentation.
 
 
 ## Prerequisites
@@ -164,9 +164,9 @@ If you need to customize this app, please refer to our [Extend Service Extension
    - Sample URL for AGS Shared Cloud customers: `https://spaceshooter.prod.gamingservices.accelbyte.io`
    - Sample URL for AGS Private Cloud customers:  `https://dev.accelbyte.io`
 
-   b. [Create a Game Namespace](https://docs.accelbyte.io/gaming-services/services/access/reference/namespaces/manage-your-namespaces/) if you don't have one yet. Keep the `Namespace ID`. Make sure this namespace is in active status.
+   b. [Create a Game Namespace](https://docs.accelbyte.io/gaming-services/modules/foundations/identity-access/namespaces/manage-your-namespaces/) if you don't have one yet. Keep the `Namespace ID`. Make sure this namespace is in active status.
 
-   c. [Create an OAuth Client](https://docs.accelbyte.io/gaming-services/services/access/authorization/manage-access-control-for-applications/#create-an-iam-client)
+   c. [Create an OAuth Client](https://docs.accelbyte.io/gaming-services/modules/foundations/identity-access/authorization/manage-access-control-for-applications/#create-an-iam-client)
    with confidential client type with the following permissions. Keep the
    `Client ID` and `Client Secret`.
 
@@ -366,7 +366,7 @@ After completing testing, the next step is to deploy your app to `AccelByte Gami
 
 1. **Create an Extend Service Extension app**
 
-   If you do not already have one, create a new [Extend Service Extension App](https://docs.accelbyte.io/gaming-services/services/extend/service-extension/sample-use-cases/vivox-authentication-service/#create-the-extend-app).
+   If you do not already have one, create a new [Extend Service Extension App](https://docs.accelbyte.io/gaming-services/modules/foundations/extend/service-extension/sample-use-cases/vivox-authentication-service/#create-the-extend-app).
 
    On the **App Detail** page, take note of the following values.
    - `Namespace`
